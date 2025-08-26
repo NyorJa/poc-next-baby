@@ -80,7 +80,8 @@ interface WeatherForecast {
 export default function Home() {
 
 
-  const url = 'https://api.openweathermap.org/data/2.5/forecast?q=Philippines&APPID=aea6b8475854db3d317d1948f253dfbb';
+  const url = `https://api.openweathermap.org/data/2.5/forecast?q=Philippines&APPID=${process.env.WEATHER_API_KEY}`;
+
 
   const { isPending, error, data } = useQuery({
     queryKey: ["repoData"],
