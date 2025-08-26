@@ -1,6 +1,128 @@
+"use client";
+
+import { error } from "console";
 import Navbar from "./components/Navbar";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+
+interface Weather {
+  id: number;
+  main: string;
+  description: string;
+  icon: string;
+}
+
+interface Main {
+  temp: number;
+  feels_like: number;
+  temp_min: number;
+  temp_max: number;
+  pressure: number;
+  sea_level: number;
+  grnd_level: number;
+  humidity: number;
+  temp_kf: number;
+}
+
+interface Clouds {
+  all: number;
+}
+
+interface Wind {
+  speed: number;
+  deg: number;
+  gust: number;
+}
+
+interface Rain {
+  "3h": number;
+}
+
+interface Sys {
+  pod: string;
+}
+
+interface ForecastEntry {
+  dt: number;
+  main: Main;
+  weather: Weather[];
+  clouds: Clouds;
+  wind: Wind;
+  visibility: number;
+  pop: number;
+  rain?: Rain; // Optional, as not all entries have rain
+  sys: Sys;
+  dt_txt: string;
+}
+
+interface City {
+  id: number;
+  name: string;
+  coord: {
+    lat: number;
+    lon: number;
+  };
+  country: string;
+  population: number;
+  timezone: number;
+  sunrise: number;
+  sunset: number;
+}
+
+interface WeatherForecast {
+  cod: string;
+  message: number;
+  cnt: number;
+  list: ForecastEntry[];
+  city: City;
+}
 
 export default function Home() {
+
+
+  const url = 'https://api.openweathermap.org/data/2.5/forecast?q=Philippines&APPID=aea6b8475854db3d317d1948f253dfbb';
+
+  const { isPending, error, data } = useQuery({
+    queryKey: ["repoData"],
+    queryFn: async (): Promise<WeatherForecast> => {
+      const { data } = await axios.get(url);
+      return data;
+    },
+  });
+
+  console.log("data ", data?.city.name);
+
+  if (isPending) {
+    return (
+      <div className="flex items-center mid-h-screen justify-center">
+        <p className="animate-bounce">
+          Loading...
+        </p>
+      </div>
+    );
+  }
+
+  // const getWeatherData = async () => {
+  //   const response = await fetch(url);
+  //   if(!response.ok) throw new Error("Failed to get weather data");
+  //   return response.json();
+  // }
+
+  // function getWeatherDataList() {
+  //   const { isLoading, error, data } = useQuery({
+  //     queryKey: ['weather'],
+  //     queryFn: getWeatherData,
+  //   });
+  // }
+
+  // const { isLoading, error, data } = useQuery("repoData", async () =>
+  //   fetch(url).then(
+  //     (res) => res.json()
+  //   )
+  // );
+
+  // console.log("data", data);
+
   return (
     // <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
     //   <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
@@ -100,6 +222,7 @@ export default function Home() {
     //   </footer>
     // </div>
     // <div>Hello World</div>
+    // https://api.openweathermap.org/data/2.5/forecast?q=Philippines&APPID=aea6b8475854db3d317d1948f253dfbb
     <div className="flex flex-col gap-4 bg-gray-100 min-h-screen ">
       <Navbar />
     </div>
